@@ -75,8 +75,8 @@ export function LogoScroll() {
   return (
     <div className="relative w-full bg-primary/5 dark:bg-primary/10 py-10 overflow-hidden">
       {/* gradient edges */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-background/100 dark:from-background/100 to-transparent z-50" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-48 bg-gradient-to-l from-background/100 dark:from-background/100 to-transparent z-50" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 md:w-48 w-24 bg-gradient-to-r from-background/100 dark:from-background/100 to-transparent z-50" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 md:w-48 w-24 bg-gradient-to-l from-background/100 dark:from-background/100 to-transparent z-50" />
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -92,7 +92,7 @@ export function LogoScroll() {
       <div className="relative z-20">
         <Marquee speed={40} gradient={false} pauseOnHover={false}>
           {logos.map((logo, index) => (
-            <div key={index} className="mx-8 flex items-center">
+            <div key={index} className="md:mx-8 mx-4 flex items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
