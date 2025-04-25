@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import "./fonts.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Analytics } from "@vercel/analytics/react"
 
 export const metadata: Metadata = {
   title: "Snoball Media",
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
