@@ -1,0 +1,8 @@
+/* This file will be used for custom font declarations */
+@font-face {
+  font-family: "Aristotelica";
+  src: url("https://snoball.media/fonts/snoball_media_font.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
