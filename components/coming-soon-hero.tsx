@@ -18,14 +18,14 @@ interface Circle {
   delay: number
 }
 
-const highlights = [
-  "Websites that convert visitors into paying customers",
-  "Internal dashboards your team will actually use",
-  "Automation systems that remove repetitive busywork",
-]
-
 export function ComingSoonHero() {
   const [circles, setCircles] = useState<Circle[]>([])
+
+  const scrollToContact = () => {
+    const contact = document.getElementById("contact")
+    if (!contact) return
+    contact.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
   useEffect(() => {
     const generated = Array.from({ length: 20 }).map<Circle>(() => {
@@ -102,31 +102,17 @@ export function ComingSoonHero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.6 }}
           >
-            We build growth-ready websites and backend tools for small businesses and startups.
+            We build websites and internal tools that help your business grow.
           </motion.h2>
 
           <motion.p
-            className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground"
+            className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.8 }}
           >
-            Launch faster with a team that combines strategy, design, development, and automation into one streamlined
-            delivery process.
+            Strategy, design, development, and automation in one team so you can launch faster with less overhead.
           </motion.p>
-
-          <motion.ul
-            className="mx-auto mb-10 grid max-w-3xl gap-3 text-left sm:grid-cols-3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.9 }}
-          >
-            {highlights.map((item) => (
-              <li key={item} className="rounded-lg border border-primary/20 bg-background/70 p-4 text-sm text-muted-foreground">
-                {item}
-              </li>
-            ))}
-          </motion.ul>
 
           <motion.div
             className="flex flex-col items-center justify-center gap-4 sm:flex-row"
@@ -134,13 +120,14 @@ export function ComingSoonHero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1 }}
           >
-            <a
-              href="mailto:contact@snoball.media"
+            <button
+              type="button"
+              onClick={scrollToContact}
               className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-base font-medium text-white shadow-lg transition-colors hover:bg-primary/90"
             >
               Start Your Project
               <ArrowRight className="h-4 w-4" />
-            </a>
+            </button>
             <a
               href="#services"
               className="inline-flex items-center justify-center rounded-md border border-primary/30 px-6 py-3 text-base font-medium text-primary transition-colors hover:bg-primary/10"
