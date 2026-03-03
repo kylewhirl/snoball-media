@@ -3,6 +3,7 @@ import { Footer } from "@/components/footer"
 import { Header } from "@/components/header"
 import { LogoScroll } from "@/components/logo-scroll"
 import { NewsletterSection } from "@/components/newsletter-section"
+import { ProcessSection } from "@/components/process-section"
 import { ServicesSection } from "@/components/services-section"
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
         <ComingSoonHero />
         <LogoScroll />
         <ServicesSection />
+        <ProcessSection />
         <NewsletterSection />
       </main>
       <Footer />
