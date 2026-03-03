@@ -17,13 +17,21 @@ export function Header() {
         <Link href="/" className="flex items-center space-x-2">
           <div className="flex items-center">
             <Image src="/snoball-logo.svg" alt="Snoball Media Logo" width={40} height={40} className="h-10 w-10" />
-            <span className="ml-2 mt-2 text-xl font-medium text-primary custom-font">snoball <span className="text-foreground">media</span></span>
+            <span className="custom-font ml-2 mt-2 text-xl font-medium text-primary">
+              snoball <span className="text-foreground">media</span>
+            </span>
           </div>
         </Link>
         <div className="flex flex-1 items-center justify-end">
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            <Link href="mailto:contact@snoball.media" className="text-primary transition-colors hover:text-primary/80">
-              Contact Us
+          <nav className="flex items-center space-x-4 text-sm font-medium md:space-x-6">
+            <Link href="#services" className="text-muted-foreground transition-colors hover:text-primary">
+              Services
+            </Link>
+            <Link href="#process" className="text-muted-foreground transition-colors hover:text-primary">
+              Process
+            </Link>
+            <Link href="#contact" className="text-primary transition-colors hover:text-primary/80">
+              Contact
             </Link>
             <ThemeToggle />
           </nav>
