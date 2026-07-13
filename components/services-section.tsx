@@ -1,99 +1,117 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Bot, Code, LayoutDashboard, Rocket, Settings, Workflow } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import type { CSSProperties } from "react"
+import type { LucideIcon } from "lucide-react"
+import { motion, useReducedMotion } from "framer-motion"
+import { ArrowUpRight, Bot, Code, LayoutDashboard, Rocket, Settings, Workflow } from "lucide-react"
 
-const services = [
+interface Service {
+  icon: LucideIcon
+  title: string
+  description: string
+  surface: string
+}
+
+const services: Service[] = [
   {
-    icon: <Rocket className="h-6 w-6" />,
+    icon: Rocket,
     title: "Startup Website Launches",
     description: "Conversion-focused marketing websites and landing pages designed to ship quickly and scale confidently.",
+    surface: "bg-primary text-black",
   },
   {
-    icon: <Code className="h-6 w-6" />,
+    icon: Code,
     title: "Custom Web Development",
     description: "Modern, performant builds with flexible CMS and integrations tailored to your growth stage.",
+    surface: "bg-[#dff2ff] text-black",
   },
   {
-    icon: <LayoutDashboard className="h-6 w-6" />,
+    icon: LayoutDashboard,
     title: "Employee Dashboards",
     description: "Role-based internal portals that centralize KPIs, tasks, and approvals for smoother team operations.",
+    surface: "bg-black text-white",
   },
   {
-    icon: <Workflow className="h-6 w-6" />,
+    icon: Workflow,
     title: "Automation Workflows",
     description: "Automate repetitive admin, reporting, and client communication flows to free your team for higher-value work.",
+    surface: "bg-[#b8e3ff] text-black",
   },
   {
-    icon: <Bot className="h-6 w-6" />,
+    icon: Bot,
     title: "AI-Assisted Tools",
     description: "Purpose-built AI helpers for summaries, support triage, and process acceleration where it actually saves time.",
+    surface: "border border-primary/20 bg-background text-foreground",
   },
   {
-    icon: <Settings className="h-6 w-6" />,
+    icon: Settings,
     title: "Ongoing Optimization",
     description: "Monthly improvements, analytics reviews, and feature iterations that keep your systems useful and effective.",
+    surface: "bg-primary text-black",
   },
 ]
 
 export function ServicesSection() {
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.12,
-      },
-    },
-  }
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-  }
+  const reduceMotion = useReducedMotion()
 
   return (
-    <section id="services" className="py-16 md:py-24">
+    <section id="services" className="scroll-mt-24 py-24 md:py-32">
       <div className="container">
         <motion.div
-          className="mx-auto mb-12 max-w-3xl text-center"
-          initial={{ opacity: 0, y: 20 }}
+          className="mb-16 grid gap-8 md:grid-cols-[1.15fr_0.85fr] md:items-end lg:mb-24"
+          initial={{ opacity: 0, y: reduceMotion ? 0 : 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="mb-4 inline-block rounded-full bg-primary/10 px-3 py-1 font-medium text-primary">What We Build</div>
-          <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">Services Built for Lean, Fast-Moving Teams</h2>
-          <p className="text-muted-foreground">
-            From your public-facing website to the internal tools behind it, we design and develop systems that reduce
-            friction and create momentum.
+          <div>
+            <p className="mb-5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">What we build</p>
+            <h2 className="max-w-4xl text-5xl leading-[0.95] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
+              From first idea to daily use.
+            </h2>
+          </div>
+          <p className="max-w-lg text-base leading-relaxed text-muted-foreground md:justify-self-end md:text-lg">
+            Public websites and the systems behind them, designed as one useful, connected experience.
           </p>
         </motion.div>
 
-        <motion.div
-          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-        >
-          {services.map((service) => (
-            <motion.div key={service.title} variants={item}>
-              <Card className="group h-full transition-all hover:shadow-md">
-                <CardHeader>
-                  <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
-                    {service.icon}
+        <div className="relative">
+          {services.map((service, index) => {
+            const Icon = service.icon
+            const style = {
+              "--stack-top": `${7 + index * 0.75}rem`,
+              zIndex: index + 1,
+            } as CSSProperties
+
+            return (
+              <motion.article
+                key={service.title}
+                style={style}
+                className={`relative mb-6 min-h-[25rem] overflow-hidden rounded-[1.75rem] p-7 shadow-[0_26px_80px_-55px_rgba(0,0,0,0.65)] last:mb-0 md:sticky md:top-[var(--stack-top)] md:mb-[18vh] md:min-h-[31rem] md:rounded-[2.25rem] md:p-12 lg:p-16 ${service.surface}`}
+                initial={{ opacity: 0, clipPath: reduceMotion ? "inset(0 0 0 0 round 2.25rem)" : "inset(8% 0 0 0 round 2.25rem)" }}
+                whileInView={{ opacity: 1, clipPath: "inset(0% 0 0 0 round 2.25rem)" }}
+                viewport={{ once: true, amount: 0.12 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex items-center gap-4">
+                    <Icon className="h-9 w-9 sm:h-11 sm:w-11" strokeWidth={1.65} aria-hidden="true" />
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] opacity-65">Service 0{index + 1}</p>
                   </div>
-                  <CardTitle>{service.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">{service.description}</CardDescription>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
+                  <ArrowUpRight className="h-7 w-7 opacity-60" aria-hidden="true" />
+                </div>
+
+                <div className="mt-24 grid gap-8 md:mt-36 md:grid-cols-[1.1fr_0.9fr] md:items-end">
+                  <h3 className="custom-font max-w-3xl text-4xl leading-none tracking-[-0.03em] sm:text-5xl lg:text-6xl">
+                    {service.title}
+                  </h3>
+                  <p className="max-w-xl text-base leading-relaxed opacity-75 md:justify-self-end md:text-lg">{service.description}</p>
+                </div>
+              </motion.article>
+            )
+          })}
+          <div aria-hidden="true" className="hidden h-[55vh] md:block" />
+        </div>
       </div>
     </section>
   )

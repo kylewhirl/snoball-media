@@ -1,6 +1,8 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useRef } from "react"
+import { motion, useReducedMotion, useScroll } from "framer-motion"
+import { ArrowRight } from "lucide-react"
 
 const steps = [
   {
@@ -9,50 +11,70 @@ const steps = [
   },
   {
     title: "Design",
-    description: "We craft messaging, UX, and interface systems that fit your brand while guiding users toward meaningful actions.",
+    description: "We shape the messaging, flows, and interface system together—so feedback stays fast and the direction stays clear.",
   },
   {
     title: "Develop",
-    description: "We ship performant frontends and reliable backend tools with integrations that reduce manual effort from day one.",
+    description: "We turn the approved direction into a performant, reliable product with the integrations your team actually needs.",
   },
   {
     title: "Scale",
-    description: "We iterate using analytics and team feedback to improve conversion, adoption, and operational efficiency over time.",
+    description: "We keep improving the work with real usage, analytics, and team feedback instead of treating launch as the finish line.",
   },
 ]
 
 export function ProcessSection() {
-  return (
-    <section id="process" className="py-16 md:py-24">
-      <div className="container">
-        <motion.div
-          className="mx-auto mb-10 max-w-2xl text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="mb-4 inline-block rounded-full bg-primary/10 px-3 py-1 font-medium text-primary">How We Work</div>
-          <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">A Practical Process for Small Teams</h2>
-          <p className="text-muted-foreground">
-            You get senior-level execution without agency bloat: clear milestones, fast feedback loops, and measurable
-            progress.
-          </p>
-        </motion.div>
+  const sectionRef = useRef<HTMLElement>(null)
+  const reduceMotion = useReducedMotion()
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start center", "end center"] })
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+  return (
+    <section ref={sectionRef} id="process" className="scroll-mt-24 overflow-hidden bg-primary/[0.055] py-24 dark:bg-white/[0.035] md:py-32">
+      <div className="container grid gap-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+        <div className="lg:sticky lg:top-32 lg:h-fit">
+          <motion.div
+            initial={{ opacity: 0, x: reduceMotion ? 0 : -35 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <p className="mb-5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">How we roll</p>
+            <h2 className="max-w-xl text-5xl leading-[0.95] tracking-[-0.04em] sm:text-6xl lg:text-7xl">Clear steps. No agency fog.</h2>
+            <p className="mt-7 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
+              Senior-level execution, direct communication, and a process that keeps decisions moving.
+            </p>
+            <a
+              href="#contact"
+              className="mt-9 inline-flex items-center gap-3 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
+            >
+              Start a project
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          </motion.div>
+        </div>
+
+        <div className="relative pl-7 sm:pl-12">
+          <div className="absolute bottom-0 left-0 top-0 w-px bg-primary/20" aria-hidden="true">
+            <motion.div
+              className="h-full w-px origin-top bg-primary"
+              style={{ scaleY: reduceMotion ? 1 : scrollYProgress }}
+            />
+          </div>
+
           {steps.map((step, index) => (
             <motion.article
               key={step.title}
-              className="rounded-xl border border-primary/20 bg-primary/5 p-6"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="grid min-h-[17rem] gap-8 border-t border-primary/20 py-10 first:border-t-0 sm:grid-cols-[5rem_1fr] md:min-h-[20rem] md:py-14"
+              initial={{ opacity: 0, x: reduceMotion ? 0 : 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-primary">0{index + 1}</p>
-              <h3 className="mb-3 text-xl font-semibold">{step.title}</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">{step.description}</p>
+              <p className="text-sm font-semibold tracking-[0.18em] text-primary">0{index + 1}</p>
+              <div>
+                <h3 className="custom-font text-4xl tracking-tight sm:text-5xl">{step.title}</h3>
+                <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">{step.description}</p>
+              </div>
             </motion.article>
           ))}
         </div>

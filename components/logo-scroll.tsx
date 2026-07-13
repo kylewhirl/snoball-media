@@ -1,113 +1,60 @@
-"use client";
+"use client"
 
-import { useMemo } from "react";
-import { motion } from "framer-motion";
-import Marquee from "react-fast-marquee";
+import Marquee from "react-fast-marquee"
 import {
-  siNextdotjs,
-  siReact,
+  siFigma,
+  siGooglecloud,
   siHtml5,
   siJavascript,
-  siCss3,
-  siTailwindcss,
-  siCanva,
-  siWebflow,
-  siWix,
-  siShopify,
-  siAffinitydesigner,
-  siAffinityphoto,
-  siAffinitypublisher,
-  siLottiefiles,
+  siNextdotjs,
+  siNodedotjs,
   siOpenai,
-  siGithub,
+  siReact,
+  siShopify,
+  siSupabase,
+  siTailwindcss,
+  siVercel,
+  siWebflow,
+} from "simple-icons"
+
+const tools = [
+  siNextdotjs,
+  siReact,
+  siTailwindcss,
+  siJavascript,
+  siHtml5,
+  siNodedotjs,
+  siSupabase,
+  siOpenai,
   siVercel,
   siFigma,
-  siAffinity,
-  siSupabase,
+  siShopify,
+  siWebflow,
   siGooglecloud,
-  siNodedotjs,
-} from "simple-icons";
-
-interface LogoProps {
-  icon: {
-    path: string;
-    title: string;
-    hex: string;
-  };
-}
-
-const baseLogos: LogoProps[] = [
-  { icon: siNextdotjs },
-  { icon: siReact },
-  { icon: siHtml5 },
-  { icon: siJavascript },
-  { icon: siCss3 },
-  { icon: siTailwindcss },
-  { icon: siCanva },
-  { icon: siWebflow },
-  { icon: siWix },
-  { icon: siShopify },
-  { icon: siAffinitydesigner },
-  { icon: siAffinityphoto },
-  { icon: siAffinitypublisher },
-  { icon: siLottiefiles },
-  { icon: siOpenai },
-  { icon: siGithub },
-  { icon: siVercel },
-  { icon: siFigma },
-  { icon: siAffinity },
-  { icon: siSupabase },
-  { icon: siGooglecloud },
-  { icon: siNodedotjs },
-];
+]
 
 export function LogoScroll() {
-  // shuffle logos once on mount
-  const logos = useMemo<LogoProps[]>(() => {
-    const arr = [...baseLogos];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }, []);
-
   return (
-    <div className="relative w-full bg-primary/5 dark:bg-primary/10 py-10 overflow-hidden">
-      {/* gradient edges */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 md:w-48 w-24 bg-gradient-to-r from-background/100 dark:from-background/100 to-transparent z-50" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 md:w-48 w-24 bg-gradient-to-l from-background/100 dark:from-background/100 to-transparent z-50" />
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="container mx-auto mb-4 text-center relative z-20"
-      >
-        <span className="text-sm font-medium text-muted-foreground">
-          Technologies &amp; Tools We Use
-        </span>
-      </motion.div>
-
-      <div className="relative z-20">
-        <Marquee speed={40} gradient={false} pauseOnHover={false}>
-          {logos.map((logo, index) => (
-            <div key={index} className="md:mx-8 mx-4 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                className="h-8 w-8"
-                role="img"
-                aria-label={logo.icon.title}
-                style={{ fill: `#${logo.icon.hex}` }}
-              >
-                <title>{logo.icon.title}</title>
-                <path d={logo.icon.path} />
-              </svg>
-            </div>
-          ))}
-        </Marquee>
+    <section className="overflow-hidden border-y border-primary/15 bg-background py-8 md:py-10" aria-label="Technologies and tools we use">
+      <div className="container mb-6 flex items-end justify-between gap-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Tools we build with</p>
+        <p className="hidden max-w-sm text-right text-sm text-muted-foreground sm:block">A flexible stack chosen around the job, not a rigid agency template.</p>
       </div>
-    </div>
-  );
+
+      <Marquee speed={34} gradient={false} pauseOnHover>
+        {tools.map((tool) => (
+          <div
+            key={tool.slug}
+            className="group mx-2 flex h-24 min-w-44 items-center gap-4 rounded-[1.5rem] border border-primary/15 bg-primary/[0.045] px-6 text-foreground transition-colors hover:bg-primary hover:text-white md:h-28 md:min-w-52"
+          >
+            <svg viewBox="0 0 24 24" className="h-8 w-8 shrink-0 fill-current" role="img" aria-label={tool.title}>
+              <title>{tool.title}</title>
+              <path d={tool.path} />
+            </svg>
+            <span className="text-sm font-semibold">{tool.title}</span>
+          </div>
+        ))}
+      </Marquee>
+    </section>
+  )
 }
