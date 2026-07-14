@@ -4,7 +4,16 @@ import Image from "next/image"
 import { motion, useReducedMotion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 
-const projects = [
+interface Project {
+  name: string
+  category: string
+  description: string
+  url: string
+  image: string
+  darkImage?: string
+}
+
+const projects: Project[] = [
   {
     name: "Corksom",
     category: "AI wine intelligence",
@@ -17,7 +26,8 @@ const projects = [
     category: "QR code platform",
     description: "A focused web app for creating, customizing, and managing QR codes without the usual friction.",
     url: "https://theqrcode.co",
-    image: "/projects/theqrcode-desktop-crop.png",
+    image: "/projects/theqrcode-desktop-crop-light.png",
+    darkImage: "/projects/theqrcode-desktop-crop-dark.png",
   },
   {
     name: "Salon Platinum",
@@ -38,14 +48,16 @@ const projects = [
     category: "iOS app",
     description: "A product and discovery experience for dynamic iPhone wallpapers that change with the sun.",
     url: "https://dinowalls.app",
-    image: "/projects/dinowalls-desktop-crop.png",
+    image: "/projects/dinowalls-desktop-crop-light.png",
+    darkImage: "/projects/dinowalls-desktop-crop-dark.png",
   },
   {
     name: "Rewrapped",
     category: "Spotify companion",
     description: "Personalized Spotify playlists that update year-round across short, medium, and long-term listening.",
     url: "https://rewrapped.kylewhirl.com",
-    image: "/projects/rewrapped-desktop-crop.png",
+    image: "/projects/rewrapped-desktop-crop-light.png",
+    darkImage: "/projects/rewrapped-desktop-crop-dark.png",
   },
   {
     name: "Passage",
@@ -59,7 +71,22 @@ const projects = [
     category: "Fitness SaaS",
     description: "A streamlined interval timer for creating and running polished Lagree, HIIT, and custom classes.",
     url: "https://reformcue.com",
-    image: "/projects/reformcue-desktop-crop.png",
+    image: "/projects/reformcue-desktop-crop-light.png",
+    darkImage: "/projects/reformcue-desktop-crop-dark.png",
+  },
+  {
+    name: "Whispering Vine Wine Co.",
+    category: "Wine & hospitality",
+    description: "A rich hospitality and retail experience for exploring wine, dining, events, and two Reno locations.",
+    url: "https://whisperingvinewine.com",
+    image: "/projects/whispering-vine-wine-desktop-crop.png",
+  },
+  {
+    name: "Atlas Landing",
+    category: "Cocktail bar",
+    description: "An atmospheric website for a Midtown Reno cocktail bar, with its menu, story, private events, and location up front.",
+    url: "https://atlaslanding.bar",
+    image: "/projects/atlas-landing-desktop-crop.png",
   },
 ]
 
@@ -108,8 +135,17 @@ export function ProjectsSection() {
                     alt={`${project.name} homepage`}
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
-                    className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.035]"
+                    className={`object-cover object-top transition-transform duration-700 group-hover:scale-[1.035] ${project.darkImage ? "dark:hidden" : ""}`}
                   />
+                  {project.darkImage ? (
+                    <Image
+                      src={project.darkImage}
+                      alt={`${project.name} homepage in dark mode`}
+                      fill
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                      className="hidden object-cover object-top transition-transform duration-700 group-hover:scale-[1.035] dark:block"
+                    />
+                  ) : null}
                   <span className="absolute right-5 top-5 flex h-12 w-12 translate-y-2 items-center justify-center rounded-full bg-background text-foreground opacity-0 shadow-sm transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                     <ArrowUpRight className="h-5 w-5" aria-hidden="true" />
                   </span>
