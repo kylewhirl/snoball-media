@@ -87,4 +87,41 @@ No actionable P0, P1, or P2 findings remain for this interaction pass.
 
 - P3: the menu description column can be removed later if an even more editorial, minimal mobile treatment is preferred.
 
+## Desktop header regression — 2026-07-14
+
+- Source visual truth: `/var/folders/5p/s780ctq539b22bl8x2vxhjhm0000gn/T/TemporaryItems/NSIRD_screencaptureui_JqPTXF/Screenshot 2026-07-14 at 11.51.58 AM.png`.
+- Rendered implementation: `/Users/Kyle/.codex/visualizations/2026/07/14/019f61f8-d386-7ff1-8a50-f55d376863fa/snoball-header-fixed.png`.
+- Theme-menu state: `/Users/Kyle/.codex/visualizations/2026/07/14/019f61f8-d386-7ff1-8a50-f55d376863fa/snoball-header-fixed-theme-menu.png`.
+- Combined focused comparison: `/Users/Kyle/.codex/visualizations/2026/07/14/019f61f8-d386-7ff1-8a50-f55d376863fa/snoball-header-comparison.png`.
+- Viewport and state: desktop at 2048 × 746, page top, system theme; theme dropdown also checked open. Mobile regression check at 390 × 844, menu closed.
+- Full-view evidence: the centered primary navigation remains centered while the brand occupies the left edge and the project/theme controls occupy the right edge of the same container.
+- Focused-region evidence: measured desktop bounds place the brand at x=344–511, nav at x=837–1211, project arrow at x=1616–1660, and theme trigger at x=1668–1704. The open theme menu ends at x=1704, aligned to its trigger rather than appearing beside the brand.
+- Fonts and typography: unchanged from the source implementation; no text sizing, wrapping, or font tokens were modified.
+- Spacing and layout rhythm: passed. Restoring desktop `justify-between` on the persistent parent creates the intended left/center/right distribution with no overlap.
+- Colors and visual tokens: unchanged and passed in both system/light render evidence.
+- Image quality and asset fidelity: unchanged; the existing Snoball logo and hero project imagery remain intact.
+- Copy and content: unchanged.
+- Comparison history: P1 desktop controls were grouped immediately after the logo because `md:contents` removed the child wrapper's `justify-between`. The fix moved desktop distribution to the parent container. Post-fix browser evidence and bounds confirm the correction.
+- Responsive verification: at 390 × 844 the desktop nav and project controls remain hidden and the mobile menu button remains visible.
+- Interaction verification: the theme dropdown opens from the right-side trigger and contains Light, Dark, and System choices. No browser console errors were recorded.
+- Build verification: `pnpm build` passed.
+- Findings: no actionable P0, P1, or P2 issues remain for this regression.
+
+## Appearance dropdown refinement — 2026-07-14
+
+- Source visual truth: `/var/folders/5p/s780ctq539b22bl8x2vxhjhm0000gn/T/TemporaryItems/NSIRD_screencaptureui_kbf3uK/Screenshot 2026-07-14 at 11.56.13 AM.png`.
+- Desktop implementation: `/Users/Kyle/.codex/visualizations/2026/07/14/019f61f8-d386-7ff1-8a50-f55d376863fa/snoball-theme-menu-desktop-fixed.png` at 2048 × 746.
+- Mobile implementation: `/Users/Kyle/.codex/visualizations/2026/07/14/019f61f8-d386-7ff1-8a50-f55d376863fa/snoball-theme-menu-mobile-fixed.png` at 390 × 844 with the navigation and appearance menus open.
+- Full-view evidence: desktop keeps the panel aligned to the right edge of its trigger; mobile opens the panel above and to the right of the trigger with a 12px viewport inset, without covering the contact details.
+- Focused-region evidence: all three options use equal 36px rows with a 16px selection slot, an 8px gap, a centered 16px icon slot, and an 8px label gap. The panel is 176px wide with 8px internal padding.
+- Fonts and typography: passed. The label uses the site's small uppercase utility style and option labels remain 14px with consistent baselines.
+- Spacing and layout rhythm: passed. Icon, selection indicator, and label columns align consistently; selected background fills the row without touching the panel edge.
+- Colors and visual tokens: passed. The selected row uses the existing primary token at low opacity; light/dark/system icon colors inherit the foreground token.
+- Image quality and asset fidelity: passed. Existing Lucide icons remain crisp SVG assets; no raster replacements or placeholders were introduced.
+- Copy and content: unchanged and passed.
+- Comparison history: P2 options had no gap between icon and label and the absolute radio indicator produced an uneven left gutter. The rows now use a three-column grid. P2 mobile positioning overlapped the contact copy; the mobile instance now opens top/start with collision padding.
+- Interaction and responsive verification: Light, Dark, and System remain semantic radio menu items. Desktop and mobile menus opened successfully and recorded no console errors.
+- TypeScript and production build verification: passed.
+- Findings: no actionable P0, P1, or P2 issues remain for the appearance dropdown.
+
 final result: passed

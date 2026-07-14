@@ -12,7 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export function ThemeToggle() {
+type ThemeToggleProps = {
+  menuAlign?: "start" | "center" | "end"
+  menuSide?: "top" | "right" | "bottom" | "left"
+}
+
+export function ThemeToggle({ menuAlign = "end", menuSide = "bottom" }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme()
 
   return (
@@ -24,18 +29,26 @@ export function ThemeToggle() {
           <span className="sr-only">Choose color theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={8} className="z-[120] min-w-40">
-        <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+      <DropdownMenuContent
+        align={menuAlign}
+        side={menuSide}
+        sideOffset={8}
+        collisionPadding={12}
+        className="z-[120] w-44 rounded-xl p-2 shadow-lg"
+      >
+        <DropdownMenuLabel className="px-2 pb-2 pt-1 text-xs uppercase tracking-[0.12em] text-muted-foreground">
+          Appearance
+        </DropdownMenuLabel>
         <DropdownMenuRadioGroup value={theme ?? "system"} onValueChange={setTheme}>
-          <DropdownMenuRadioItem value="light">
+          <DropdownMenuRadioItem value="light" className="rounded-lg data-[state=checked]:bg-primary/10">
             <Sun aria-hidden="true" />
             Light
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="dark">
+          <DropdownMenuRadioItem value="dark" className="rounded-lg data-[state=checked]:bg-primary/10">
             <Moon aria-hidden="true" />
             Dark
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="system">
+          <DropdownMenuRadioItem value="system" className="rounded-lg data-[state=checked]:bg-primary/10">
             <Monitor aria-hidden="true" />
             System
           </DropdownMenuRadioItem>

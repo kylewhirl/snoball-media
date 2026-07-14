@@ -82,7 +82,7 @@ export function Header() {
   return (
     <>
       <header className="pointer-events-none sticky top-0 z-[70] h-20 w-full md:h-24">
-        <div className="container relative flex h-full items-center">
+        <div className="container relative flex h-full items-center md:justify-between">
           <div
             className={`relative flex h-14 w-full items-center justify-between rounded-full border px-2.5 shadow-[0_12px_38px_-24px_rgba(0,0,0,0.42)] backdrop-blur-xl md:contents ${
               isMenuOpen ? "border-black/10 bg-white/80" : "border-primary/15 bg-background/75"
@@ -253,7 +253,7 @@ export function Header() {
                   <p className="mt-2 text-xs text-black/50">Reno, Nevada · working worldwide</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ThemeToggle />
+                  <ThemeToggle menuAlign="start" menuSide="top" />
                   <Link
                     href="#contact"
                     onClick={closeMenu}
