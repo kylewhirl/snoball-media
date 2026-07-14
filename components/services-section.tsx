@@ -79,6 +79,7 @@ export function ServicesSection() {
           {services.map((service, index) => {
             const Icon = service.icon
             const style = {
+              "--stack-top-mobile": `${5.5 + index * 0.5}rem`,
               "--stack-top": `${7 + index * 0.75}rem`,
               zIndex: index + 1,
             } as CSSProperties
@@ -87,7 +88,7 @@ export function ServicesSection() {
               <motion.article
                 key={service.title}
                 style={style}
-                className={`relative mb-6 min-h-[25rem] overflow-hidden rounded-[1.75rem] p-7 shadow-[0_26px_80px_-55px_rgba(0,0,0,0.65)] last:mb-0 md:sticky md:top-[var(--stack-top)] md:mb-[18vh] md:min-h-[31rem] md:rounded-[2.25rem] md:p-12 lg:p-16 ${service.surface}`}
+                className={`sticky top-[var(--stack-top-mobile)] mb-[14svh] min-h-[25rem] overflow-hidden rounded-[1.75rem] p-7 shadow-[0_26px_80px_-55px_rgba(0,0,0,0.65)] last:mb-0 md:top-[var(--stack-top)] md:mb-[18vh] md:min-h-[31rem] md:rounded-[2.25rem] md:p-12 lg:p-16 ${service.surface}`}
                 initial={{ opacity: 0, clipPath: reduceMotion ? "inset(0 0 0 0 round 2.25rem)" : "inset(8% 0 0 0 round 2.25rem)" }}
                 whileInView={{ opacity: 1, clipPath: "inset(0% 0 0 0 round 2.25rem)" }}
                 viewport={{ once: true, amount: 0.12 }}
@@ -110,7 +111,7 @@ export function ServicesSection() {
               </motion.article>
             )
           })}
-          <div aria-hidden="true" className="hidden h-[55vh] md:block" />
+          <div aria-hidden="true" className="h-[45svh] md:h-[55vh]" />
         </div>
       </div>
     </section>

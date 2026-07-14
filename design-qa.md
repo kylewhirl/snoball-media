@@ -124,4 +124,14 @@ No actionable P0, P1, or P2 findings remain for this interaction pass.
 - TypeScript and production build verification: passed.
 - Findings: no actionable P0, P1, or P2 issues remain for the appearance dropdown.
 
+## Mobile service-card stack — 2026-07-14
+
+- Source visual truth: the existing verified desktop service-card stack, adapted to the mobile layout requested by the user.
+- Rendered implementation: `/Users/Kyle/snoball-media/.codex-implementation-services-stack-mobile.png` and `/Users/Kyle/snoball-media/.codex-implementation-services-stack-mobile-final.png` at 390 × 844.
+- Layout behavior: all six cards are sticky on mobile, with staggered top positions of 88, 96, 104, 112, 120, and 128px so each service tab remains visible below the 56px blurred header pill.
+- Scroll rhythm: mobile cards retain the existing 400px card height and use a 14svh inter-card runway. The final card receives a 45svh in-container runway so Service 06 reaches its 128px resting position and remains pinned for at least another 250px of scrolling before Process enters.
+- Responsive verification: no horizontal overflow at 390px. Desktop offsets and spacing remain unchanged behind the `md` breakpoint.
+- TypeScript and whitespace verification: passed.
+- Findings: no actionable P0, P1, or P2 issues remain for the mobile card stack.
+
 final result: passed
