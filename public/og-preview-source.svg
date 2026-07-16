@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <clipPath id="snowball-clip">
+      <circle cx="600" cy="315" r="104" />
+    </clipPath>
+    <filter id="remove-black" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="luminance" />
+      <feComposite in="SourceGraphic" in2="luminance" operator="in" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="#48b3ff" />
+
+  <g aria-label="How we roll snowball">
+    <g
+      fill="#ffffff"
+      font-family="Arial, sans-serif"
+      font-size="20"
+      font-weight="700"
+      text-anchor="middle"
+    >
+      <text x="600" y="144" transform="rotate(0.000 600 315)">H</text>
+      <text x="600" y="144" transform="rotate(12.857 600 315)">O</text>
+      <text x="600" y="144" transform="rotate(25.714 600 315)">W</text>
+      <text x="600" y="144" transform="rotate(51.429 600 315)">W</text>
+      <text x="600" y="144" transform="rotate(64.286 600 315)">E</text>
+      <text x="600" y="144" transform="rotate(90.000 600 315)">R</text>
+      <text x="600" y="144" transform="rotate(102.857 600 315)">O</text>
+      <text x="600" y="144" transform="rotate(115.714 600 315)">L</text>
+      <text x="600" y="144" transform="rotate(128.571 600 315)">L</text>
+      <text x="600" y="144" transform="rotate(154.286 600 315)">•</text>
+      <text x="600" y="144" transform="rotate(180.000 600 315)">H</text>
+      <text x="600" y="144" transform="rotate(192.857 600 315)">O</text>
+      <text x="600" y="144" transform="rotate(205.714 600 315)">W</text>
+      <text x="600" y="144" transform="rotate(231.429 600 315)">W</text>
+      <text x="600" y="144" transform="rotate(244.286 600 315)">E</text>
+      <text x="600" y="144" transform="rotate(270.000 600 315)">R</text>
+      <text x="600" y="144" transform="rotate(282.857 600 315)">O</text>
+      <text x="600" y="144" transform="rotate(295.714 600 315)">L</text>
+      <text x="600" y="144" transform="rotate(308.571 600 315)">L</text>
+      <text x="600" y="144" transform="rotate(334.286 600 315)">•</text>
+    </g>
+
+    <circle cx="600" cy="325" r="112" fill="#0b5790" opacity="0.11" />
+
+    <circle
+      cx="600"
+      cy="315"
+      r="106"
+      fill="#48b3ff"
+      stroke="#ffffff"
+      stroke-opacity="0.4"
+      stroke-width="2"
+    />
+
+    <image
+      x="486"
+      y="201"
+      width="228"
+      height="228"
+      xlink:href="snoball-rotation-poster.jpg"
+      preserveAspectRatio="xMidYMid slice"
+      clip-path="url(#snowball-clip)"
+      filter="url(#remove-black)"
+    />
+
+    <g
+      fill="none"
+      stroke="#ffffff"
+      stroke-width="4"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      transform="translate(576 291) scale(2)"
+    >
+      <path d="M12 5v14" />
+      <path d="m19 12-7 7-7-7" />
+    </g>
+  </g>
+</svg>
