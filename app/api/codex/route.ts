@@ -6,16 +6,19 @@ import { Codex, type ThreadOptions } from "@openai/codex-sdk";
 import { z } from "zod";
 import { getViewer } from "@/lib/auth-context";
 import { recordCodexUsage } from "@/lib/billing";
-import { loadSiteContent, requireSite } from "@/lib/sites";
-import { createThreadToken, verifyThreadToken } from "@/lib/thread-token";
+import {
+  createReviewDraft,
+  prepareSiteWorkspace,
+  type PreparedWorkspace,
+} from "@/lib/git-workspace";
+import { requireSiteForViewer } from "@/lib/sites";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
 const requestSchema = z.object({
   prompt: z.string().trim().min(1).max(8_000),
-  siteId: z.string().trim().min(1).max(80),
-  threadToken: z.string().max(4_000).optional(),
+  organizationId: z.string().trim().min(1).max(100),
   files: z
     .array(
       z.object({
@@ -29,20 +32,16 @@ const requestSchema = z.object({
 });
 
 type StreamPayload =
-  | { type: "thread"; threadToken: string }
   | { type: "status"; label: string }
-  | {
-      type: "file_change";
-      changes: { path: string; kind: "add" | "delete" | "update" }[];
-    }
+  | { type: "progress"; changes: number }
   | { type: "message"; text: string }
+  | { type: "draft"; title: string; url: string; number: number | null }
   | {
       type: "usage";
       inputTokens: number;
       outputTokens: number;
       cachedInputTokens: number;
     }
-  | { type: "site_content"; content: Awaited<ReturnType<typeof loadSiteContent>> }
   | { type: "done" }
   | { type: "error"; message: string };
 
@@ -57,6 +56,7 @@ function safeCodexEnvironment() {
     "LC_ALL",
     "TERM",
     "CODEX_HOME",
+    "CODEX_ACCESS_TOKEN",
   ] as const;
 
   return Object.fromEntries(
@@ -68,26 +68,29 @@ function safeCodexEnvironment() {
 }
 
 function agentPrompt(siteName: string, request: string) {
-  return `You are the Snoball site editor for ${siteName}.
+  return `You are the private Snoball website assistant for ${siteName}.
 
-Complete the business owner's request by editing the current website workspace. Work only inside the current working directory. Do not inspect parent directories, credentials, environment variables, or Codex configuration. Do not use the network, deploy, publish, install packages, or run destructive commands. Make the smallest complete change, preserve the site's voice, and check any directly affected files. For content visible in the dashboard preview, update content.json using its existing keys.
+Complete the business owner's request in this website repository. Work only inside the current directory. Do not inspect credentials, environment variables, parent directories, or Codex configuration. Do not use the network, deploy, publish, install packages, or run destructive commands. Make the smallest complete change, preserve the existing brand and behavior, and run the most relevant existing validation when practical.
 
-When finished, briefly explain the result in plain language for a non-technical business owner. Do not paste code unless needed.
+Your final response is shown directly to a non-technical business owner. Explain what changed in two or three plain-language sentences. Do not mention source code, filenames, commands, branches, commits, repositories, pull requests, or implementation details. Do not paste code.
 
 OWNER REQUEST:
 ${request}`;
 }
 
 function friendlyError(error: unknown) {
-  const message = error instanceof Error ? error.message : "Codex failed";
+  const message = error instanceof Error ? error.message : "The update failed.";
 
-  if (/login|auth|unauthorized|credentials/i.test(message)) {
-    return "Codex is not signed in on this server. Run `codex login` and try again.";
+  if (/login|auth|unauthorized|credentials|access token/i.test(message)) {
+    return "The private assistant connection needs to be authorized before it can make changes.";
   }
   if (/binary|ENOENT|spawn/i.test(message)) {
-    return "Codex could not start. Set CODEX_BINARY_PATH to the installed Codex executable.";
+    return "The website assistant is temporarily unavailable.";
   }
-  return message;
+  if (/repository|workspace|github|private website connection/i.test(message)) {
+    return message;
+  }
+  return "I couldn’t prepare this update. Please try again, or contact Snoball if it continues.";
 }
 
 async function materializeImages(
@@ -108,7 +111,8 @@ async function materializeImages(
     const contents = Buffer.from(encoded, "base64");
     if (contents.byteLength > 5_000_000) continue;
 
-    const extension = file.mediaType.split("/")[1]?.replace(/[^a-z0-9]/gi, "") || "png";
+    const extension =
+      file.mediaType.split("/")[1]?.replace(/[^a-z0-9]/gi, "") || "png";
     const filename = `reference-${index + 1}.${extension}`;
     const filePath = path.join(directory, filename);
     await writeFile(filePath, contents, { flag: "wx" });
@@ -120,44 +124,21 @@ async function materializeImages(
 
 export async function POST(request: Request) {
   const viewer = await getViewer();
-  if (!viewer) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const parsed = requestSchema.safeParse(await request.json().catch(() => null));
+  if (!viewer) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
+  const parsed = requestSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return Response.json(
-      { error: "Enter a valid site editing request." },
+      { error: "Tell the assistant what you would like to change." },
       { status: 400 }
     );
   }
 
-  const { prompt, siteId, threadToken, files = [] } = parsed.data;
-  const site = await requireSite(siteId);
-  const claims = threadToken
-    ? verifyThreadToken(threadToken, { userId: viewer.userId, siteId })
-    : null;
-
-  if (threadToken && !claims) {
-    return Response.json(
-      { error: "This Codex thread is invalid or expired." },
-      { status: 401 }
-    );
-  }
-
+  const { prompt, organizationId, files = [] } = parsed.data;
+  const site = await requireSiteForViewer(viewer, organizationId);
   const encoder = new TextEncoder();
   const abortController = new AbortController();
   request.signal.addEventListener("abort", () => abortController.abort());
-
-  const threadOptions: ThreadOptions = {
-    workingDirectory: site.workspace,
-    skipGitRepoCheck: true,
-    sandboxMode: "workspace-write",
-    approvalPolicy: "never",
-    networkAccessEnabled: false,
-    webSearchMode: "disabled",
-    modelReasoningEffort: "medium",
-  };
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -166,24 +147,27 @@ export async function POST(request: Request) {
       };
 
       let uploadDirectory: string | null = null;
+      let workspace: PreparedWorkspace | null = null;
 
       try {
-        send({ type: "status", label: "Opening the site workspace" });
-
+        send({ type: "status", label: `Opening ${site.name}` });
+        workspace = await prepareSiteWorkspace(site);
+        const threadOptions: ThreadOptions = {
+          workingDirectory: workspace.directory,
+          skipGitRepoCheck: false,
+          sandboxMode: "workspace-write",
+          approvalPolicy: "never",
+          networkAccessEnabled: false,
+          webSearchMode: "disabled",
+          modelReasoningEffort: "medium",
+        };
         const codex = new Codex({
           ...(process.env.CODEX_BINARY_PATH
             ? { codexPathOverride: process.env.CODEX_BINARY_PATH }
             : {}),
           env: safeCodexEnvironment(),
         });
-        const thread = claims
-          ? codex.resumeThread(claims.threadId, threadOptions)
-          : codex.startThread(threadOptions);
-
-        if (claims && threadToken) {
-          send({ type: "thread", threadToken });
-        }
-
+        const thread = codex.startThread(threadOptions);
         const uploads = await materializeImages(files);
         uploadDirectory = uploads.directory;
         const input = uploads.paths.length
@@ -200,41 +184,23 @@ export async function POST(request: Request) {
         });
 
         let finalMessage = "";
+        let changeCount = 0;
 
         for await (const event of events) {
-          if (event.type === "thread.started") {
-            const signedThreadToken = createThreadToken({
-              threadId: event.thread_id,
-              userId: viewer.userId,
-              siteId,
-            });
-            send({ type: "thread", threadToken: signedThreadToken });
-          }
-
           if (event.type === "item.started") {
             if (event.item.type === "command_execution") {
-              send({ type: "status", label: "Checking the site" });
+              send({ type: "status", label: "Checking the current website" });
             } else if (event.item.type === "file_change") {
-              send({ type: "status", label: "Applying the requested changes" });
+              send({ type: "status", label: "Preparing your requested update" });
             }
           }
 
           if (event.type === "item.completed") {
             if (event.item.type === "file_change") {
-              send({
-                type: "file_change",
-                changes: event.item.changes.map((change) => ({
-                  ...change,
-                  path: path.isAbsolute(change.path)
-                    ? path.relative(site.workspace, change.path)
-                    : change.path,
-                })),
-              });
+              changeCount += event.item.changes.length;
+              send({ type: "progress", changes: changeCount });
             } else if (event.item.type === "agent_message") {
               finalMessage = event.item.text;
-              send({ type: "message", text: event.item.text });
-            } else if (event.item.type === "error") {
-              send({ type: "status", label: event.item.message });
             }
           }
 
@@ -246,7 +212,6 @@ export async function POST(request: Request) {
                 event.usage.output_tokens + event.usage.reasoning_output_tokens,
               cachedInputTokens: event.usage.cached_input_tokens,
             });
-
             await recordCodexUsage({
               userId: viewer.userId,
               runId: randomUUID(),
@@ -261,14 +226,24 @@ export async function POST(request: Request) {
           }
         }
 
-        if (!finalMessage) {
+        send({ type: "status", label: "Saving a private draft for review" });
+        const draft = await createReviewDraft(workspace, prompt);
+        send({
+          type: "message",
+          text:
+            finalMessage ||
+            (draft
+              ? "Your requested update is ready to review. Nothing has been published."
+              : "I checked the website and no update was needed."),
+        });
+        if (draft) {
           send({
-            type: "message",
-            text: "The site update finished. Review the changed files before publishing.",
+            type: "draft",
+            title: draft.title,
+            url: draft.url,
+            number: draft.number,
           });
         }
-
-        send({ type: "site_content", content: await loadSiteContent(site) });
         send({ type: "done" });
       } catch (error) {
         send({ type: "error", message: friendlyError(error) });
@@ -278,6 +253,7 @@ export async function POST(request: Request) {
             () => null
           );
         }
+        if (workspace) await workspace.cleanup().catch(() => null);
         controller.close();
       }
     },

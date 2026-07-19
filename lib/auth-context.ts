@@ -8,6 +8,7 @@ export type Viewer = {
   displayName: string;
   initials: string;
   isDemo: boolean;
+  isAdmin: boolean;
 };
 
 export function isClerkConfigured() {
@@ -36,6 +37,7 @@ export async function getViewer(): Promise<Viewer | null> {
       displayName: "Kyle",
       initials: "KB",
       isDemo: true,
+      isAdmin: true,
     };
   }
 
@@ -54,5 +56,6 @@ export async function getViewer(): Promise<Viewer | null> {
     displayName,
     initials: initialsFor(displayName),
     isDemo: false,
+    isAdmin: user.privateMetadata.snoballAdmin === true,
   };
 }
