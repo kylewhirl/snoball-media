@@ -59,6 +59,7 @@
     "react-resizable-panels": "^2.1.7",
     "react-snowfall": "latest",
     "recharts": "2.15.0",
+    "resend": "^6.17.2",
     "simple-icons": "latest",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",

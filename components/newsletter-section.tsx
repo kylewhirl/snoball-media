@@ -6,7 +6,7 @@ import dynamic from "next/dynamic"
 import { motion, useReducedMotion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 
@@ -16,17 +16,47 @@ export function NewsletterSection() {
   const [email, setEmail] = useState("")
   const [bookingEmail, setBookingEmail] = useState("")
   const [isBookingOpen, setIsBookingOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const reduceMotion = useReducedMotion()
   const { toast } = useToast()
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setBookingEmail(email)
-    setIsBookingOpen(true)
-    toast({
-      title: "Choose a time that works for you",
-      description: "Your email is prefilled in the booking window.",
-    })
+
+    const formData = new FormData(event.currentTarget)
+    const submittedEmail = email.trim().toLowerCase()
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: submittedEmail,
+          website: String(formData.get("website") ?? ""),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Lead capture failed")
+      }
+
+      setBookingEmail(submittedEmail)
+      setIsBookingOpen(true)
+      toast({
+        title: "Choose a time that works for you",
+        description: "Your email is prefilled in the booking window.",
+      })
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "We couldn't save your email",
+        description: "Please try again so we can open the booking calendar.",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -51,6 +81,16 @@ export function NewsletterSection() {
               </p>
 
               <form onSubmit={handleSubmit} className="mt-10 flex max-w-2xl flex-col gap-3 sm:flex-row">
+                <div className="absolute -left-[9999px]" aria-hidden="true">
+                  <label htmlFor="contact-website">Website</label>
+                  <input
+                    id="contact-website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
                 <Input
                   type="email"
                   placeholder="Your work email"
@@ -58,10 +98,16 @@ export function NewsletterSection() {
                   className="h-14 min-h-14 shrink-0 rounded-full border-white/60 bg-background px-6 text-base shadow-none focus-visible:ring-primary sm:flex-1"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
+                  disabled={isSubmitting}
                   required
                 />
-                <Button type="submit" className="h-14 min-h-14 shrink-0 rounded-full bg-primary px-7 text-base font-semibold text-white hover:bg-primary/90">
-                  View available times
+                <Button
+                  type="submit"
+                  className="h-14 min-h-14 shrink-0 rounded-full bg-primary px-7 text-base font-semibold text-white hover:bg-primary/90"
+                  disabled={isSubmitting}
+                  aria-busy={isSubmitting}
+                >
+                  {isSubmitting ? "Saving your email…" : "View available times"}
                   <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
                 </Button>
               </form>
@@ -95,6 +141,7 @@ export function NewsletterSection() {
         <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
           {bookingEmail && (
             <DialogContent className="max-h-[95vh] w-[calc(100%-1rem)] max-w-5xl overflow-y-auto p-2 sm:p-4">
+              <DialogTitle className="sr-only">Choose an available meeting time</DialogTitle>
               <Cal
                 calLink="kyle-worrall/snoball-intro"
                 config={{ email: bookingEmail, layout: "month_view" }}
